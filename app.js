@@ -1235,11 +1235,3 @@ app.post('/check_cotizacion', (req, res) => {
 
 
 // ... Resto del código ...
-
-
-
-  
-
-app.listen(3306, () => {
-  console.log('Servidor iniciado en el puerto 3306...');
-});

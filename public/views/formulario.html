@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles/formulario.css">
+    <title>Montayreca.</title>
+
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+
+         const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        document.getElementById('fecha').value = fechaActual;
+
+        // 2. Agregar evento para validar fecha de entrega no anterior a la actual
+        const fechaEntregaInput = document.getElementById('tiempo_entrega');
+        fechaEntregaInput.addEventListener('input', function () {
+        const fechaEntrega = fechaEntregaInput.value;
+        if (fechaEntrega < fechaActual) {
+            alert('La fecha de entrega no puede ser anterior a la fecha actual.');
+            fechaEntregaInput.value = ''; // Limpiar el campo en caso de fecha incorrecta
+        }
+        });
+
+        console.log('Script is running');
+        const urlParams = new URLSearchParams(window.location.search);
+        const solicitudId = urlParams.get('solicitudId');
+        const clienteId = urlParams.get('clienteId');
+        const clienteNombre = urlParams.get('clienteNombre');
+
+        console.log('solicitudId:', solicitudId);
+        console.log('clienteId:', clienteId);
+        console.log('clienteNombre:', clienteNombre)
+
+        // Llenar automáticamente los campos del formulario
+        if (solicitudId && clienteId && clienteNombre) {
+            document.getElementById('id').value = solicitudId;
+            document.getElementById('id_cliente').value = clienteId;
+            document.getElementById('nombre_cliente').value = clienteNombre;
+        }
+		try {
+			const userInfoString = localStorage.getItem('userInfo');
+			console.log('User info string:', userInfoString);
+
+			if (userInfoString) {
+			const userInfo = JSON.parse(userInfoString);
+			const { email, password } = userInfo;
+
+			console.log('Attempting login with:', email, password);
+
+			// Realiza el inicio de sesión automático
+			login(email, password)
+				.then(() => {
+				console.log('Usuario autenticado automáticamente:', email, password);
+				// Realiza acciones adicionales según la información del usuario
+				})
+				.catch((error) => {
+				console.error('Error al iniciar sesión automáticamente:', error.message);
+				console.log('Full error details:', error); // Add this line to log the full error details
+				});
+			}
+		} catch (error) {
+			console.error('Error en el script:', error);
+		}
+		});
+
+    // Resto de tu código...
+		</script>
+  </head>
+  <body>
+    <div class="d-flex">
+        <div id="sidebar-container" class="bg-primary">
+        <div class="logo">
+            <h4 class="text-light font-weigth-bold">Montayreca.</h4><a href="./index.html"></a>
+        </div>
+        <div class="menu">
+            <a href="formulario.html" class="d-block text-light p-4"><ion-icon name="reader" class=" lead"> </ion-icon>Formulario</a>
+            <a href="bandeja.html" class="d-block text-light p-4"><ion-icon name="archive" class=" lead "> </ion-icon>Bandeja de entrada</a>
+            <a href="reportes.html" class="d-block text-light p-4"><ion-icon name="albums" class="lead" ></ion-icon>Reportes</a>
+            <a href="https://heyzine.com/flip-book/1f27c9537a.html" target="_blank" class="d-block text-light p-4"><ion-icon name="people" class=" lead" ></ion-icon>Manual de Usuario</a>
+            <a href="#" id="logoutLink" class="d-block text-light p-4 position-absolute bottom-0">
+              <ion-icon name="person" class="lead"></ion-icon>Cerrar sesión
+            </a>
+        </div>
+        </div>
+        <form action="/guardar_cotizacion" method="POST">
+          <h1>Formulario de cotización</h1>
+
+<!--
+          <label for="selectUsuarios">Seleccione un Cliente:</label>
+          <select id="selectUsuarios" onmousedown="obtenerUsuarios()">
+            <option value="" disabled selected>Seleccionar</option>
+          </select>
+-->
+
+        <div class="form-group">
+            <label for="nombre_cliente">ID de Cotización</label>
+            <input type="text" id="id" name="id" placeholder="Ingrese el ID de Cotización">
+        </div>
+
+        <div class="form-group">
+            <label for="id_cliente">ID de Cliente</label>
+            <input type="text" id="id_cliente" name="id_cliente" placeholder="Ingrese el ID del Cliente" readonly>
+        </div>
+
+          <div class="form-group">
+            <label for="nombre_cliente">Nombre del Cliente</label>
+            <input type="text" id="nombre_cliente" name="nombre_cliente" placeholder="Ingrese el nombre del Cliente">
+        </div>
+      
+      
+          <div class="form-group">
+              <label for="fecha">Fecha</label>
+              <input type="date" id="fecha" name="fecha" readonly>
+          </div>
+      
+          <div class="form-group">
+              <label for="tipo">Requerimientos</label>
+              <select id="tipo" name="tipo" required>
+                  <option value="" disabled selected>Selecciona un tipo</option>
+                  <option value="venta">Venta</option>
+                  <option value="compra">Compra</option>
+                  <option value="reparacion">Reparación</option>
+              </select>
+          </div>
+      
+          <div class="form-group">
+              <label for="descripcion">Descripción</label>
+              <textarea id="descripcion" name="descripcion" rows="10" cols="30"></textarea>
+          </div>
+      
+          <div class="contener">
+              <div class="form-group">
+                  <label for="condiciones_pago">Condiciones de pago</label>
+                  <select id="condiciones_pago" name="condiciones_pago">
+                      <option value="" disabled selected>Selecciona una condición</option>
+                      <option value="efectivo">Contado</option>
+                      <option value="transferencia">De contado</option>
+                  </select>
+              </div>
+      
+              <div class="form-group">
+                  <label for="garantia">Garantía</label>
+                  <select id="garantia" name="garantia">
+                      <option value="" disabled selected>Selecciona una garantía</option>
+                      <option value="de_fabrica">De fábrica</option>
+                      <option value="sin_garantia">Sin garantía</option>
+                  </select>
+              </div>
+          </div>
+      
+          <div class="contener">
+              <div class="form-group">
+                  <label for="tiempo_entrega">Fecha de entrega</label>
+                  <input type="date" id="tiempo_entrega" name="tiempo_entrega">
+              </div>
+          </div>
+      
+          <div class="form-group">
+              <label for="monto_total">Monto total</label>
+              <input type="text" id="monto_total" name="monto_total" placeholder="Ingrese el monto total" min="0" pattern="[0-9]*" title="Ingrese solo números" required>
+          </div>
+      
+          <button type="submit" onclick="submitRequest(event)">Enviar</button>
+          <p id="mensajeExito" style="display: none; color: green;">Formulario enviado correctamente</p>
+          <p id="errorMessage" style="display: none; color: green;">El Formulario no se ha enviado</p>
+          <p id="formErrorMessage" style="display: none; color: red;"></p>
+      </form>
+      
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>
+
+<script>
+  document.getElementById('cotizacionForm').addEventListener('submit', submitRequest);
+
+  function submitRequest(event) {
+    
+      event.preventDefault();
+
+          // Validar que todos los campos estén llenos
+      if (!areAllFieldsFilled()) {
+        alert('Por favor, complete todos los campos antes de enviar el formulario.');
+        return;
+      }
+
+      fetch('/guardar_cotizacion', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              fecha: document.getElementById('fecha').value,
+              tipo: toTitleCase(document.querySelector('select[name="tipo"]').value),
+              descripcion: document.getElementById('descripcion').value,
+              condiciones_pago: toTitleCase(document.querySelector('select[name="condiciones_pago"]').value),  // Convertir primera letra a mayúscula
+              garantia: toTitleCase(document.getElementById('garantia').value.replace(/_/g, ' ')),  // Reemplazar guion bajo con espacio y convertir primera letra a mayúscula
+              tiempo_entrega: document.getElementById('tiempo_entrega').value,
+              monto_total: document.getElementById('monto_total').value,
+              id_cliente: document.getElementById('id_cliente').value,
+          }),
+      })
+      .then(response => response.json())
+      .then(data => handleResponse(data))
+      .catch(error => handleError(error));
+  }
+
+  function handleResponse(data) {
+      // Mostrar mensajes según la respuesta del servidor
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (data.success) {
+          // Mostrar mensaje de éxito
+          successMessage.textContent = '¡Formulario enviado correctamente!';
+          successMessage.style.display = 'block';
+
+          clearForm();
+
+          // Limpiar campos del formulario después de 5 segundos
+          setTimeout(() => {
+
+              successMessage.style.display = 'none';
+          }, 5000);
+      } else {
+          // Mostrar mensaje de error
+          errorMessage.textContent = data.message || 'Ha ocurrido un error al enviar el formulario.';
+          errorMessage.style.display = 'block';
+
+          clearForm();
+
+          // Limpiar campos del formulario después de 5 segundos
+          setTimeout(() => {
+
+              errorMessage.style.display = 'none';
+          }, 5000);
+      }
+  }
+
+  function handleError(error) {
+      // Mostrar mensaje de error en caso de un fallo en la solicitud
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = `Error al enviar la solicitud. Detalles: ${error.message}`;
+      errorMessage.style.display = 'block';
+
+      clearForm();
+
+      // Limpiar campos del formulario después de 5 segundos
+      setTimeout(() => {
+
+          errorMessage.style.display = 'none';
+      }, 5000);
+  }
+
+  function clearForm() {
+    // Limpiar los campos del formulario
+    document.getElementById('fecha').value = '';
+    document.querySelector('select[name="tipo"]').selectedIndex = 0;
+    document.getElementById('descripcion').value = '';
+    document.querySelector('select[name="condiciones_pago"]').selectedIndex = 0;
+    document.getElementById('garantia').selectedIndex = 0;
+    document.getElementById('tiempo_entrega').value = '';
+    document.getElementById('monto_total').value = '';
+    document.getElementById('id_cliente').value = '';
+    document.getElementById('nombre_cliente').value = '';
+    document.getElementById('id').value = '';
+}
+
+function areAllFieldsFilled() {
+    // Verificar que todos los campos obligatorios estén llenos
+    const requiredFields = ['fecha', 'tipo', 'descripcion', 'condiciones_pago', 'garantia', 'tiempo_entrega', 'monto_total', 'id_cliente', 'nombre_cliente', 'id'];
+
+    for (const fieldName of requiredFields) {
+      const fieldValue = document.getElementById(fieldName).value.trim();
+      if (fieldValue === '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // ... your existing code ...
+
+  // Attach a click event to the logout link
+  const logoutLink = document.getElementById('logoutLink');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', logout);
+  }
+});
+
+function logout(event) {
+  event.preventDefault();
+
+  // Clear user information from local storage
+
+
+  // Perform any additional steps for logging out on the server-side (invalidate session/token)
+
+  // Redirect to the login page
+  window.location.href = '../index.html'; // Change the URL to your login page
+    localStorage.removeItem('userInfo');
+}
+
+</script>
+
+
+<script>
+    function obtenerUsuarios() {
+      fetch('/obtener_usuarios')
+        .then(response => response.json())
+        .then(data => {
+          const usuarios = data.usuarios;
+          const selectUsuarios = document.getElementById('selectUsuarios');
+          const idClienteInput = document.getElementById('id_cliente');
+    
+          // Clear existing options
+          selectUsuarios.innerHTML = '';
+    
+          // Add the default "Seleccionar" option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.disabled = true;
+          defaultOption.selected = true;
+          defaultOption.textContent = 'Seleccionar';
+          selectUsuarios.appendChild(defaultOption);
+    
+          // Add other options
+          usuarios.forEach(usuario => {
+            const option = document.createElement('option');
+            option.value = usuario.id;
+            option.text = usuario.nombre_razon_social;
+            selectUsuarios.add(option);
+          });
+    
+          // Update the ID de Cliente input when a user is selected
+          selectUsuarios.addEventListener('change', () => {
+            const selectedUserId = selectUsuarios.value;
+            idClienteInput.value = selectedUserId || ''; // If selectedUserId is falsy, set it to an empty string
+          });
+        })
+        .catch(error => console.error('Error al obtener usuarios:', error));
+    }
+    </script>
+
+
+<script>
+function login(email, password) {
+    // Devuelve una promesa para manejar la lógica asíncrona
+    return new Promise((resolve, reject) => {
+        // Realiza una solicitud al servidor para autenticar al usuario
+        fetch('/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+            }),
+        })
+        .then(response => {
+            // Verifica si la respuesta es exitosa (código de estado 2xx)
+            if (response.ok) {
+                // Parsea la respuesta JSON
+                return response.json();
+            } else {
+                // Rechaza la promesa con un mensaje de error
+                throw new Error('Autenticación fallida');
+            }
+        })
+        .then(data => {
+            // Lógica adicional después de una autenticación exitosa
+            console.log('Usuario autenticado:', data);
+
+            // Almacena información en localStorage después de la autenticación exitosa
+            const userInfo = {
+                email: email,
+                password: password,
+                itip: data.itip,
+                userId: data.userId,
+            };
+
+            // Almacena la información en localStorage
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+            console.log(`Usuario autenticado probando - email: ${userInfo.email}, itip: ${userInfo.itip}, userId: ${userInfo.userId}, password: ${userInfo.password}`);
+
+            resolve(data);
+        })
+        .catch(error => {
+            // Rechaza la promesa con el mensaje de error
+            reject(error.message);
+        });
+    });
+}
+
+function toTitleCase(str) {
+  // Convierte la primera letra a mayúscula y el resto a minúsculas
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // ... (your existing code)
+  
+      // Attach input event listener to monto_total to block non-numeric input
+      const montoTotalInput = document.getElementById('monto_total');
+      montoTotalInput.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+      });
+    });
+  
+    // ... (your existing code)
+  </script>

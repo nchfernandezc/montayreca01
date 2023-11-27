@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles/bandeja.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
+
+    <title>Montayreca</title>
+
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+		try {
+			const userInfoString = localStorage.getItem('userInfo');
+			console.log('User info string:', userInfoString);
+
+			if (userInfoString) {
+			const userInfo = JSON.parse(userInfoString);
+			const { email, password } = userInfo;
+
+			console.log('Attempting login with:', email, password);
+
+			// Realiza el inicio de sesión automático
+			login(email, password)
+				.then(() => {
+				console.log('Usuario autenticado automáticamente:', email, password);
+				// Realiza acciones adicionales según la información del usuario
+				})
+				.catch((error) => {
+				console.error('Error al iniciar sesión automáticamente:', error.message);
+				console.log('Full error details:', error); // Add this line to log the full error details
+				});
+			}
+		} catch (error) {
+			console.error('Error en el script:', error);
+		}
+		});
+		</script>
+</head>
+
+<body>
+    <div class="d-flex">
+        <div id="sidebar-container" class="bg-primary">
+            <div class="logo">
+                <h4 class="text-light font-weigth-bold">Montayreca.</h4>
+            </div>
+            <div class="menu">
+                <a href="formulario.html" class="d-block text-light p-4"><ion-icon name="reader"
+                        class=" lead"> </ion-icon>Formulario</a>
+                <a href="bandeja.html" class="d-block text-light p-4"><ion-icon name="archive"
+                        class=" lead "> </ion-icon>Bandeja de entrada</a>
+                <a href="reportes.html" class="d-block text-light p-4"><ion-icon name="albums"
+                        class="lead" ></ion-icon>Reportes</a>
+                <a href="https://heyzine.com/flip-book/1f27c9537a.html" target="_blank" class="d-block text-light p-4"><ion-icon name="people" class=" lead" ></ion-icon>Manual de Usuario</a>
+                <a href="#" id="logoutLink" class="d-block text-light p-4 position-absolute bottom-0">
+                    <ion-icon name="person" class="lead"></ion-icon>Cerrar sesión
+                    </a>
+            </div>
+        </div>
+        <div class="w-100">
+            <nav class="navbar navbar-expand-lg bg-light">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <!-- Tus elementos de menú -->
+                        </ul>
+                        <!--
+                        <form class="d-flex" role="search">
+                            <input class="form-control me-2" type="search" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-warning fs-6 " type="submit">Search</button>
+                        </form>
+                        -->
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="container mt-8">
+                <br>
+                <h2>Reportes</h2>
+                <div class="mb-8">
+                    <label for="tipoReporte" class="form-label">Tipo de Reporte:</label>
+                    <select class="form-select" id="tipoReporte" required>
+                        <option selected>Seleccionar</option>
+                        <option value="clientes">Clientes</option>
+                        <option value="solicitudes">Solicitudes</option>
+                        <option value="cotizaciones">Cotizaciones</option>
+                        <option value="administradores">Administradores</option>
+                    </select>
+                </div>
+                <br>
+                <button class="btn btn-primary" id="generarReporte">Generar Tabla</button>
+                <hr>
+                <!-- Resto de tu contenido -->
+                <div id="tablaContainer"></div>
+            </div>
+            
+            <div class="bandeja-content" id="bandejaContent"></div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Tu script adicional aquí -->
+
+</body>
+
+</html>
+
+<script>
+document.getElementById('generarReporte').addEventListener('click', function () {
+    // Obtener el tipo de informe seleccionado
+    const tipoReporte = document.getElementById('tipoReporte').value;
+
+    // Enviar solicitud al servidor para obtener datos del informe
+    fetch(`/api/reporte?tipoReporte=${tipoReporte}`)
+        .then(response => response.json())
+        .then(data => {
+            // Generar la tabla según el tipo de informe
+            const tablaContainer = document.getElementById('tablaContainer');
+            switch (tipoReporte) {
+                case 'clientes':
+                    tablaContainer.innerHTML = generarTablaClientes(data);
+                    break;
+                case 'solicitudes':
+                    tablaContainer.innerHTML = generarTablaSolicitudes(data);
+                    break;
+                case 'cotizaciones':
+                    tablaContainer.innerHTML = generarTablaCotizaciones(data);
+                    break;
+                case 'administradores':
+                    tablaContainer.innerHTML = generarTablaAdministradores(data);
+                    break;
+                default:
+                    tablaContainer.innerHTML = '<p>Tipo de informe no válido.</p>';
+                    break;
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del informe:', error);
+        });
+});
+
+// Funciones para generar las tablas según el tipo de informe
+function generarTablaClientes(data) {
+    // Estructura HTML específica para clientes
+    // Puedes personalizar esta estructura según tus necesidades
+    let tableHTML = '<table class="table">' +
+        '<thead><tr>' +
+        '<th>ID del Cliente</th>' +
+        '<th>Nombre</th>' +
+        '<th>CI o RIF</th>' +
+        '<th>Username</th>' +
+        '<th>Email</th>' +
+        '<th>Teléfono</th>' +
+        '</tr></thead>' +
+        '<tbody>';
+
+    // Recorrer los datos y agregar filas a la tabla
+    data.forEach(cliente => {
+        tableHTML += `<tr>${crearCelda(cliente.id)}${crearCelda(cliente.nombre_razon_social)}${crearCelda(cliente.cedula_rif)}${crearCelda(cliente.username)}${crearCelda(cliente.email)}${crearCelda(cliente.telefono)}</tr>`;
+    });
+
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
+
+function generarTablaSolicitudes(data) {
+    // Estructura HTML específica para solicitudes
+    // Puedes personalizar esta estructura según tus necesidades
+    let tableHTML = '<table class="table">' +
+        '<thead><tr>' +
+        '<th>ID de Solicitud</th>' +
+        '<th>ID del Cliente</th>' +
+        '<th>Nombre del Cliente</th>' +
+        '<th>Fecha</th>' +
+        '<th>Tipo de Requerimiento</th>' +
+        '<th>Descripción</th>' +
+        '<th>Nota</th>' +
+        '</tr></thead>' +
+        '<tbody>';
+
+    // Recorrer los datos y agregar filas a la tabla
+    data.forEach(solicitud => {
+        // Formatear la fecha como "día mes año"
+        const fechaFormateada = new Date(solicitud.fecha).toLocaleDateString();
+        tableHTML += `<tr>${crearCelda(solicitud.id)}${crearCelda(solicitud.id_usuario)}${crearCelda(solicitud.nombre_razon_social)}${crearCelda(fechaFormateada)}${crearCelda(solicitud.tipo_de_requerimiento)}${crearCelda(solicitud.descripcion)}${crearCelda(solicitud.nota)}</tr>`;
+    });
+
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
+
+function generarTablaAdministradores(data) {
+    // Estructura HTML específica para administradores
+    // Puedes personalizar esta estructura según tus necesidades
+    let tableHTML = '<table class="table">' +
+        '<thead><tr>' +
+        '<th>ID del Administrador</th>' +
+        '<th>Nombre</th>' +
+        '<th>CI o RIF</th>' +
+        '<th>Username</th>' +
+        '<th>Email</th>' +
+        '<th>Teléfono</th>' +
+        '</tr></thead>' +
+        '<tbody>';
+
+    // Recorrer los datos y agregar filas a la tabla
+    data.forEach(administrador => {
+        tableHTML += `<tr>${crearCelda(administrador.id)}${crearCelda(administrador.nombre_razon_social)}${crearCelda(administrador.cedula_rif)}${crearCelda(administrador.username)}${crearCelda(administrador.email)}${crearCelda(administrador.telefono)}</tr>`;
+    });
+
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
+
+function generarTablaCotizaciones(data) {
+    // Estructura HTML específica para cotizaciones
+    // Puedes personalizar esta estructura según tus necesidades
+    let tableHTML = '<table class="table">' +
+        '<thead><tr>' +
+        '<th>ID de Cotización</th>' +
+        '<th>ID del Cliente</th>' +
+        '<th>Nombre del Cliente</th>' +
+        '<th>Fecha</th>' + 
+        '<th>Tipo</th>' +
+        '<th>Descripción</th>' +
+        '<th>Condiciones de Pago</th>' +
+        '<th>Garantía</th>' +
+        '<th>Tiempo de Entrega</th>' +
+        '<th>Monto Total</th>' +
+        '</tr></thead>' +
+        '<tbody>';
+
+    // Recorrer los datos y agregar filas a la tabla
+    data.forEach(cotizacion => {
+        const fechaFormateada = new Date(cotizacion.fecha).toLocaleDateString();
+        const entregaFormateada = new Date(cotizacion.tiempo_entrega).toLocaleDateString();
+        tableHTML += `<tr>${crearCelda(cotizacion.id)}${crearCelda(cotizacion.id_cliente)}${crearCelda(cotizacion.nombre_razon_social)}${crearCelda(fechaFormateada)}${crearCelda(cotizacion.tipo)}${crearCelda(cotizacion.descripcion)}${crearCelda(cotizacion.condiciones_pago)}${crearCelda(cotizacion.garantia)}${crearCelda(entregaFormateada)}${crearCelda(cotizacion.monto_total)}</tr>`;
+    });
+
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
+
+// Función para crear una celda HTML con el contenido proporcionado
+function crearCelda(contenido) {
+    return `<td>${contenido}</td>`;
+}
+</script>
+
+<!--
+<script>
+    document.getElementById('generarReporte').addEventListener('click', function() {
+    // Obtener el tipo de informe seleccionado
+    const tipoReporte = document.getElementById('tipoReporte').value;
+
+    // Enviar solicitud al servidor para obtener datos del informe
+    fetch(`/api/reporte?tipoReporte=${tipoReporte}`)
+        .then(response => response.json())
+        .then(data => {
+            // Generar la tabla
+            const tablaContainer = document.getElementById('tablaContainer');
+            tablaContainer.innerHTML = generarTabla(data);
+        })
+        .catch(error => {
+            console.error('Error al obtener datos del informe:', error);
+        });
+});
+    // Función para generar la tabla HTML a partir de los datos
+    function generarTabla(data) {
+        if (!data || data.length === 0) {
+            return '<p>No hay datos disponibles para mostrar.</p>';
+        }
+    
+        // Crear la tabla HTML
+        let tableHTML = '<table class="table">';
+        // Agregar encabezados de columna
+        tableHTML += '<thead><tr>';
+        for (const key in data[0]) {
+            tableHTML += `<th>${key}</th>`;
+        }
+        tableHTML += '</tr></thead>';
+    
+        // Agregar filas de datos
+        tableHTML += '<tbody>';
+        data.forEach(row => {
+            tableHTML += '<tr>';
+            for (const key in row) {
+                tableHTML += `<td>${row[key]}</td>`;
+            }
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody>';
+    
+        tableHTML += '</table>';
+    
+        return tableHTML;
+    }
+    </script>
+
+-->
+
+<script>
+    function login(email, password) {
+        // Devuelve una promesa para manejar la lógica asíncrona
+        return new Promise((resolve, reject) => {
+            // Realiza una solicitud al servidor para autenticar al usuario
+            fetch('/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                }),
+            })
+            .then(response => {
+                // Verifica si la respuesta es exitosa (código de estado 2xx)
+                if (response.ok) {
+                    // Parsea la respuesta JSON
+                    return response.json();
+                } else {
+                    // Rechaza la promesa con un mensaje de error
+                    throw new Error('Autenticación fallida');
+                }
+            })
+            .then(data => {
+                // Lógica adicional después de una autenticación exitosa
+                console.log('Usuario autenticado:', data);
+    
+                // Almacena información en localStorage después de la autenticación exitosa
+                const userInfo = {
+                    email: email,
+                    password: password,
+                    itip: data.itip,
+                    userId: data.userId,
+                };
+    
+                // Almacena la información en localStorage
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    
+                console.log(`Usuario autenticado probando - email: ${userInfo.email}, itip: ${userInfo.itip}, userId: ${userInfo.userId}, password: ${userInfo.password}`);
+    
+                resolve(data);
+            })
+            .catch(error => {
+                // Rechaza la promesa con el mensaje de error
+                reject(error.message);
+            });
+        });
+    }
+        </script>
+    
+        
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // ... your existing code ...
+        
+          // Attach a click event to the logout link
+          const logoutLink = document.getElementById('logoutLink');
+          if (logoutLink) {
+            logoutLink.addEventListener('click', logout);
+          }
+        });
+        
+        function logout(event) {
+          event.preventDefault();
+        
+          // Clear user information from local storage
+        
+        
+          // Perform any additional steps for logging out on the server-side (invalidate session/token)
+        
+          // Redirect to the login page
+          window.location.href = '../index.html'; // Change the URL to your login page
+            localStorage.removeItem('userInfo');
+        }
+        
+        </script>

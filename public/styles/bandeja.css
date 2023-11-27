@@ -1,0 +1,52 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root{
+--primary:  #4E4FeB;
+--light: #ffff;
+}
+
+body{
+    overflow: hidden;
+    font-weight: 300;
+    color: var(--primary);
+}
+.bg-primary{
+    background-color: var(--primary) !important;
+}
+#sidebar-container{
+    min-height: 100vh;
+}
+#sidebar-container .logo{
+
+    padding: .875rem 1.25rem;
+}
+#sidebar-container .menu{
+    width: 18rem;
+} a{
+    text-decoration: none;
+}ion-icon{
+    margin-right: 10px;
+}
+a:hover{
+    background: #f9bf29;
+
+}
+.h1{
+    margin-left: 400px;
+}
+
+.bandeja-content {
+    max-height: 95vh; /* Establece la altura máxima en el 70% de la altura visible del viewport */
+    overflow-y: scroll; /* Agrega desplazamiento vertical si el contenido excede la altura máxima */
+    padding: 10px; /* Agrega un relleno para evitar que el contenido toque los bordes */
+}
+
+#tablaContainer {
+    max-height: 500px; /* ajusta la altura máxima según tus necesidades */
+    overflow-y: auto; /* agrega una barra de desplazamiento vertical si es necesario */
+}
+
+#tablaWrapper {
+    overflow-x: auto;
+    max-width: 100%; /* agrega una barra de desplazamiento horizontal si es necesario */
+}

@@ -1,0 +1,1326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="images/logo.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+
+		<!-- Bootstrap CSS -->
+		<link href="bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+		<link href="tiny-slider.css" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<title>Montayreca</title>
+
+		<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		try {
+			const userInfoString = localStorage.getItem('userInfo');
+			console.log('User info string:', userInfoString);
+
+			if (userInfoString) {
+			const userInfo = JSON.parse(userInfoString);
+			const { email, password } = userInfo;
+
+			console.log('Attempting login with:', email, password);
+
+			// Realiza el inicio de sesión automático
+			login(email, password)
+				.then(() => {
+				console.log('Usuario autenticado automáticamente:', email, password);
+				// Realiza acciones adicionales según la información del usuario
+				})
+				.catch((error) => {
+				console.error('Error al iniciar sesión automáticamente:', error.message);
+				console.log('Full error details:', error); // Add this line to log the full error details
+				});
+			}
+            // Llamar a la función para establecer la fecha actual
+
+        } catch (error) {
+            console.error('Error en el script:', error);
+        }
+		});
+		</script>
+			
+		  
+
+
+	</head>
+
+	<body> 
+
+		<!-- Start Header/Navigation -->
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+			<div class="container"> 
+				<a class="navbar-brand" href="index.html">Montayreca<span>.</span></a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="navbarsFurni">
+					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+						<!--
+						<li><a class="nav-link" href="#precios">Compra</a></li>
+						<li><a class="nav-link" href="about.html">Sobre nosotros</a></li>
+						<li><a class="nav-link" href="services.html">Servicios</a></li>
+						<li><a class="nav-link" href="blog.html">Blog</a></li>
+						<li><a class="nav-link" href="contact.html">Contactanos</a></li>
+					</ul>
+					-->
+					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+						<button onclick="openForm()" class="open-form-button" style="background: none; border: none; padding: 0; margin-right: 10px; cursor: pointer;">
+							<img src="images/user.svg" style="width: 24px; height: 24px;">
+						</button>
+						<button class="btn btn-dark" id="manual" style="display: none; margin-right: 10px;" onclick="redirigirAManual()">Manual de Usuario</button>						  
+						<button class="btn btn-primary" id="solicitarButton" style="display: none; margin-right: 10px;" onclick="openRequestForm()">Solicitar</button> 
+						<button class="btn btn-primary" id="bandejaButton" style="display: none; margin-right: 10px;" onclick="openBandeja()">Bandeja</button>		
+						<button class="btn btn-primary btn-rojo" id="logoutButton" style="display: none; margin-right: 10px;" onclick="cerrarSesion()">Cerrar Sesión</button>	
+
+					</ul>
+					
+				</div>
+			</div>
+				
+		</nav>
+
+		<!-- Start Hero Section -->
+			<div class="hero">
+				<div class="container">
+					<div class="row justify-content-between">
+						<div class="col-lg-5">
+							<div class="intro-excerpt">
+								<h1>MONTACARGAS <span clsas="d-block">A TU DISPOSICIÓN.</span></h1>
+								<p class="mb-4">Venta, alquiler y reparación de montacargas</p>
+							</div>
+						</div>
+						<div class="col-lg-7">
+							<div class="hero-img-wrap">
+								<img src="images/montacargas.png" class="img-fluid">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- End Hero Section -->
+
+		<div id="overlay" class="overlay" style="display: none;">
+			<div class="form-container">
+			  <div class="close-btn" onclick="closeForm()">X</div>
+			  <h2>¡Bienvenido!</h2>
+			  <div id="login-form">
+				<p>Por favor inicia sesión para continuar</p>
+				<form action="/authenticate" method="POST" onsubmit="hideForm()">
+				  <div class="input_box">
+					<input name='email' type="email" placeholder="Correo electrónico" required />
+					<i class="uil uil-envelope-alt email"></i>
+				  </div>
+				  <div class="input_box">
+					<input name='password' type="password" placeholder="Contraseña" required />
+					<i class="uil uil-lock password"></i>
+					<i class="uil uil-eye-slash pw_hide"></i>
+				  </div>
+				  <input type="hidden" name="itip">
+				  <!--
+				  <div class="option_field">
+					<span class="checkbox">
+					  <input type="checkbox" id="check" />
+					  <label for="check">Recordarme</label>
+					</span>
+					<a href="#" class="forgot_pw">¿Olvidaste tu contraseña?</a>
+				  </div>
+				  -->
+				  <button type="submit" class="btn btn-primary" onclick="submitForm(event)" id="loginButtonaa">Iniciar sesión</button>
+				</form>
+				<div class="toggle-btn" onclick="toggleForm()">¿Aún no tienes cuenta? Regístrate aquí</div>
+			  </div>
+			  <div id="register-form" class="registerForm" style="display: none;">
+				<p>¿Todavía no estás registrado? Regístrate aquí</p>
+				<form action="/register" method="POST" onsubmit="return registerUser(event);">
+					<div class="input_box">
+						<input name='cedula_rif' type="text" placeholder="Cédula o RIF" inputmode="numeric" pattern="[0-9]+" required />
+					</div>
+					<div class="input_box">
+						<input name='nombre_razon_social' type="text" placeholder="Nombre o Razón Social" required /> 
+					</div>
+					<div class="input_box">
+						<input name="telefono" type="text" placeholder="Teléfono" inputmode="numeric" pattern="[0-9]+" />
+					</div>
+					<div class="input_box">
+						<input name='username' type="text" placeholder="Username" />
+					</div>
+					<input name='itip' type="hidden" value="0" />
+					<div class="input_box">
+						<input name='email' type="email" placeholder="Email" required />
+					</div>
+					<div class="input_box">
+						<input name='password' type="password" placeholder="Contraseña" required />
+					</div>
+					<div class="input_box">
+						<input name='password_confirmation' type="password" placeholder="Confirmar contraseña" required />
+					</div>
+					<button type="submit" class="btn btn-primary">Registrarse</button>
+					<p id="registrationMessage" style="display: none; color: green;">Registro completado</p>
+				</form>
+				<div class="toggle-btn" onclick="toggleForm()">¿Ya estás registrado? Haz clic aquí para iniciar sesión</div>				
+				</div>
+			</div>
+		</div>
+		
+		
+
+		
+		  
+		<div id="overlay-request" class="overlay" style="display: none;">
+			<div class="form-container">
+				<div class="close-btn" onclick="closeRequestForm()">X</div>
+				<h2>Formulario de Solicitudes</h2>
+				<div id="request-form">
+					<p>Por favor complete los detalles de la solicitud:</p>
+					<form action="/submit_request" method="POST" onsubmit="hideForm()">
+						<div class="input_box">
+							<input name="fecha" type="date" required readonly/>
+							<i class="uil uil-calendar-alt"></i>
+						</div>
+						<div class="input_box">
+							<select name="tipo_de_requerimiento" required>
+								<option value="" disabled selected>Seleccione el tipo de Solicitud</option>
+								<option value="Solicitud de servicio">Solicitud de servicio</option>
+								<option value="Reclamo">Reclamo</option>
+								<option value="Consulta">Consulta</option>
+								<option value="Otro">Otro</option>
+							</select>
+							<i class="uil uil-list-ul"></i>
+						</div>
+						<div class="input_box">
+							<textarea name="descripcion" placeholder="Descripción" required></textarea>
+							<i class="uil uil-comment-alt-lines"></i>
+						</div>
+						<div class="input_box">
+							<textarea name="nota" placeholder="Nota"></textarea>
+							<i class="uil uil-sticky-note"></i>
+						</div>
+						<br>
+						<button type="submit" class="btn btn-primary" onclick="submitRequest(event)">Enviar Solicitud</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- BANDEJA DE COTIZACIONES -->
+		<div id="bandeja" class="bandeja">
+			<div class="bandeja-content">
+				<a href="javascript:void(0)" class="closebtn" onclick="closeBandeja()">&times;</a>
+				<div class="bandeja-header">
+					<h2>Bandeja de Cotizaciones</h2>
+				</div>
+				<div class="cotizaciones">
+					<div class="categoria categoria-aceptadas" onclick="toggleCategoria('aceptadas')">
+						<h3 class="categoria-titulo verde-pastel">Cotizaciones Aceptadas</h3>
+						<div id="aceptadas" class="categoria-contenido" style="display: none;">
+							<!-- Contenido de cotizaciones aceptadas -->
+							<p class="categoria-texto">Contenido de cotizaciones aceptadas.</p>
+						</div>
+					</div>
+					<div class="categoria categoria-rechazadas" onclick="toggleCategoria('rechazadas')">
+						<h3 class="categoria-titulo rojo-pastel">Cotizaciones Rechazadas</h3>
+						<div id="rechazadas" class="categoria-contenido" style="display: none;">
+							<!-- Contenido de cotizaciones rechazadas -->
+							<p class="categoria-texto">Contenido de cotizaciones rechazadas.</p>
+						</div>
+					</div>
+					<!--
+					<div class="categoria categoria-pendientes" onclick="toggleCategoria('pendientes')">
+						<h3 class="categoria-titulo">Cotizaciones Pendientes</h3>
+						<div id="pendientes" class="categoria-contenido" style="display: none;">
+							<p class="categoria-texto">Contenido de cotizaciones pendientes.</p>
+						</div>
+					</div>
+					-->
+					<div class="categoria categoria-aceptadas" onclick="toggleCategoria('recibidas')">
+						<h3 class="categoria-titulo">Cotizaciones Recibidas</h3>
+						<div id="recibidas" class="categoria-contenido" style="display: none;">
+							<!-- Aquí se mostrará el contenido de cotizaciones recibidas -->
+							<p class="categoria-texto">Contenido de cotizaciones recibidas.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- FINAL DE LA BANDEJA -->
+
+		
+		
+		<!-- Start Product Section -->
+		<div class="product-section">
+			<div class="container">
+				<div class="row">
+
+					<!-- Start Column 1 -->
+					<div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+						<h2 class="mb-4 section-title">Los mejores precios del mercado</h2>
+						<p class="mb-4"> </p>
+					</div> 
+					<!-- End Column 1 -->
+
+					<!-- Start Column 2 -->
+					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+						<a class="product-item" href="#precios">
+							<img src="images/montacargas.png" class="img-fluid product-thumbnail">
+							<h3 class="product-title">Montacargas industrial</h3>
+							<strong class="product-price">Cotizacion</strong>
+
+							<span class="icon-cross">
+								<img src="images/cross.svg" class="img-fluid">
+							</span>
+						</a>
+					</div> 
+					<!-- End Column 2 -->
+
+					<!-- Start Column 3 -->
+					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+						<a class="product-item" href="">
+							<img src="images/monta-fino.png" class="img-fluid product-thumbnail">
+							<h3 class="product-title">Estibador Hidraulico</h3>
+							<strong class="product-price">Cotizaciones</strong>
+
+							<span class="icon-cross">
+								<img src="images/cross.svg" class="img-fluid">
+							</span>
+						</a>
+					</div>
+					<!-- End Column 3 -->
+
+					<!-- Start Column 4 -->
+					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+						<a class="product-item" href="">
+							<img src="images/monta-largo.png" class="img-fluid product-thumbnail">
+							<h3 class="product-title">Elevador de carga</h3>
+							<strong class="product-price">Cotizaciones</strong>
+
+							<span class="icon-cross">
+								<img src="images/cross.svg" class="img-fluid">
+							</span>
+						</a>
+					</div>
+					<!-- End Column 4 -->
+
+				</div>
+			</div>
+		</div>
+		<!-- End Product Section -->
+
+		<!-- Start Why Choose Us Section -->
+		<div class="why-choose-section">
+			<div class="container">
+				<div class="row justify-content-between">
+					<div class="col-lg-6">
+						<h2 class="section-title">POR QUÉ ELEGIRNOS</h2>
+						<p>En nuestra empresa, nos enorgullece ofrecer un servicio integral de alquiler, reparación y venta de montacargas a través de nuestra plataforma en línea. Aquí hay algunas razones por las que deberías elegirnos:</p>
+
+						<div class="row my-5">
+							<div class="col-6 col-md-6">
+								<div class="feature">
+									<div class="icon">
+										<img src="images/truck.svg" alt="Image" class="imf-fluid">
+									</div>
+									<h3>Envío Rápido y Gratuito.</h3>
+									<p>Ofrecemos envío rápido y gratuito para que tus montacargas lleguen a donde los necesitas en el menor tiempo posible. Tu tiempo es valioso, y estamos comprometidos a ayudarte a maximizarlo.</p>
+								</div>
+							</div>
+
+							<div class="col-6 col-md-6">
+								<div class="feature">
+									<div class="icon">
+										<img src="images/bag.svg" alt="Image" class="imf-fluid">
+									</div>
+									<h3>Cotizaciones Rápidas.</h3>
+									<p>En Montayreca, simplificamos tu experiencia de compra. Encuentra, alquila, o compra montacargas con facilidad y obtén cotizaciones personalizadas en minutos. Tu comodidad es nuestra prioridad.</p>
+								</div>
+							</div>
+
+							<div class="col-6 col-md-6">
+								<div class="feature">
+									<div class="icon">
+										<img src="images/support.svg" alt="Image" class="imf-fluid">
+									</div>
+									<h3>Soporte 24/7.</h3>
+									<p>Nuestro equipo de soporte está disponible las 24 horas del día, los 7 días de la semana. Ya sea que tengas preguntas, necesites asistencia técnica o requieras cotizaciones fuera del horario laboral habitual, estamos aquí para ayudarte.</p>
+								</div>
+							</div>
+
+							<div class="col-6 col-md-6">
+								<div class="feature">
+									<div class="icon">
+										<img src="images/return.svg" alt="Image" class="imf-fluid">
+									</div>
+									<h3>Devoluciones sin Problemas</h3>
+									<p>Si alguna vez necesitas devolver un producto o enfrentas algún problema, nuestro proceso de devoluciones es sin complicaciones. Queremos asegurarnos de que estés satisfecho con nuestros productos y servicios en todo momento.</p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="col-lg-5">
+						<div class="img-wrap">
+							<img src="images/fotopersonal.jpg" alt="Image" class="img-fluid">
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- End Why Choose Us Section -->
+
+		<!-- Start We Help Section -->
+		<div class="we-help-section">
+			<div class="container">
+				<div class="row justify-content-between">
+					<div class="col-lg-7 mb-5 mb-lg-0">
+						<div class="imgs-grid">
+							<div class="grid grid-1"><img src="images/equipo1.jfif" alt="Untree.co"></div>
+							<div class="grid grid-2"><img src="images/equipo2.jfif" alt="Untree.co"></div>
+							<div class="grid grid-3"><img src="images/equipo3.jpg" alt="Untree.co"></div>
+						</div>
+					</div>
+					<div class="col-lg-5 ps-lg-5">
+						<h2 class="section-title mb-4">Estamos junto a ti en todo el proceso.</h2>
+						<p> 
+						<ul class="list-unstyled custom-list my-4">
+							<li>Calidad asegurada: <br>Cumplimos con los más altos estándares de seguridad y calidad.</li>
+							<li>Eficiencia rentable: Optimizamos costos y maximizamos la eficiencia en operaciones.</li>
+							<li>Innovación constante: <br> Nos mantenemos a la vanguardia de la tecnología y las tendencias de la industria.</li>
+							<li>Compromiso ecológico: Implementamos prácticas sostenibles para reducir nuestro impacto ambiental.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End We Help Section -->
+
+
+		<!-- Start Testimonial Slider -->
+		<div class="testimonial-section">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-7 mx-auto text-center">
+						<h2 class="section-title">Testimonios</h2>
+					</div>
+				</div>
+
+				<div class="row justify-content-center">
+					<div class="col-lg-12">
+						<div class="testimonial-slider-wrap text-center">
+
+							<div id="testimonial-nav">
+								<span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
+								<span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
+							</div>
+
+							<div class="testimonial-slider">
+								
+								<div class="item">
+									<div class="row justify-content-center">
+										<div class="col-lg-8 mx-auto">
+
+											<div class="testimonial-block text-center">
+												<blockquote class="mb-5">
+													<p>&ldquo;La experiencia de trabajar con Montayreca ha sido excepcional. Su dedicación a la calidad y al servicio al cliente se refleja en cada interacción. Su enfoque personalizado y su atención a los detalles han mejorado significativamente nuestras operaciones logísticas.&rdquo;</p>
+												</blockquote>
+
+												<div class="author-info">
+													<div class="author-pic">
+														<img src="images/makro.png" alt="Maria Jones" class="img-fluid">
+													</div>
+													<h3 class="font-weight-bold">Andrés Pineda</h3>
+													<span class="position d-block mb-3">Empleado de Makro.</span>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div> 
+								<!-- END item -->
+
+								<div class="item">
+									<div class="row justify-content-center">
+										<div class="col-lg-8 mx-auto">
+
+											<div class="testimonial-block text-center">
+												<blockquote class="mb-5">
+													<p>&ldquo;Montayreca ha demostrado ser un socio confiable en nuestro proceso de expansión. Su asesoramiento experto y su compromiso con la innovación tecnológica han sido fundamentales para mejorar la eficiencia de nuestras operaciones de almacén. Recomendaríamos sus servicios sin dudarlo.&rdquo;</p>
+												</blockquote>
+
+												<div class="author-info">
+													<div class="author-pic">
+														<img src="images/kola.png" alt="Maria Jones" class="img-fluid">
+													</div>
+													<h3 class="font-weight-bold">Daniela Ramos</h3>
+													<span class="position d-block mb-3">Empleada de Kola Maracaibo.</span>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div> 
+								<!-- END item -->
+
+								<div class="item">
+									<div class="row justify-content-center">
+										<div class="col-lg-8 mx-auto">
+
+											<div class="testimonial-block text-center">
+												<blockquote class="mb-5">
+													<p>&ldquo;Hemos confiado en Montayreca durante años debido a su enfoque proactivo en el mantenimiento preventivo y su capacidad para proporcionar soluciones adaptadas a nuestras necesidades en evolución. Su equipo altamente profesional y su servicio al cliente excepcional han sido de gran valor para nuestras operaciones.&rdquo;</p>
+												</blockquote>
+
+												<div class="author-info">
+													<div class="author-pic">
+														<img src="images/turbopre.png" alt="Maria Jones" class="img-fluid">
+													</div>
+													<h3 class="font-weight-bold">Mariangel Villalobos</h3>
+													<span class="position d-block mb-3">Empleada de Turbopre.</span>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div> 
+								<!-- END item -->
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Testimonial Slider -->
+
+		<!-- Start Footer Section -->
+		<footer class="footer-section">
+			<div class="container relative">
+
+				<div class="sofa-img">
+					<img src="images/monta-largo.png" alt="Image" class="img-fluid">
+				</div>
+
+
+				<div class="row g-5 mb-5">
+					<div class="col-lg-4">
+						<div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">montayreca y repuesto, c.a<span>.</span></a></div>
+						<p class="mb-4">Calle 106A. Edificio Río Claro. Piso 1 <br> 
+							Nro 1-2 Sector Residencial Río Piedras.</p>
+
+				<div class="border-top copyright">
+					<div class="row pt-4">
+						<div class="col-lg-6">
+							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; <a href="https://untree.co"></a>  <a hreff="https://themewagon.com"></a>  <!-- License information: https://untree.co/license/ -->
+            				</p>
+						</div>
+
+						<div class="col-lg-6 text-center text-lg-end">
+							<ul class="list-unstyled d-inline-flex ms-auto">
+								<li class="me-4"><a href="#">RIF J - 30736660 - 5</a></li>
+							</ul>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</footer>
+		<!-- End Footer Section -->	
+
+
+		<script src="js/bootstrap.bundle.min.js"></script>
+		<script src="js/tiny-slider.js"></script>
+		<script src="js/custom.js"></script>
+
+	</body>
+
+</html>
+
+
+
+<script>
+	function registerUser(event) {
+		event.preventDefault();
+	
+		// Obtener los valores de los campos de contraseña y confirmación de contraseña
+		const password = document.querySelector('#register-form input[name="password"]').value;
+		const confirmPassword = document.querySelector('#register-form input[name="password_confirmation"]').value;
+	
+		// Verificar si las contraseñas coinciden
+		if (password !== confirmPassword) {
+			// Mostrar mensaje de error en el formulario de registro
+			const registrationMessage = document.getElementById('registrationMessage');
+			registrationMessage.textContent = 'Las contraseñas no coinciden. Por favor, inténtelo de nuevo.';
+			registrationMessage.style.color = 'red';
+			registrationMessage.style.display = 'block';
+	
+			// Ocultar el mensaje de error después de 5 segundos
+			setTimeout(() => {
+				registrationMessage.style.display = 'none';
+			}, 5000);
+	
+			// Detener la ejecución del resto del código
+			return;
+		}
+	
+		// Obtener el correo electrónico y el nombre de usuario para verificar
+		const emailToCheck = document.querySelector('#register-form input[name="email"]').value;
+		const usernameToCheck = document.querySelector('#register-form input[name="username"]').value;
+	
+		fetch(`/checkEmail?email=${encodeURIComponent(emailToCheck)}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.exists) {
+					// Mostrar mensaje de error en el formulario de registro
+					const registrationMessage = document.getElementById('registrationMessage');
+					registrationMessage.textContent = 'Correo electrónico duplicado';
+					registrationMessage.style.color = 'red';
+					registrationMessage.style.display = 'block';
+	
+					// Ocultar el mensaje de error después de 5 segundos
+					setTimeout(() => {
+						registrationMessage.style.display = 'none';
+					}, 5000);
+	
+					// Detener la ejecución del resto del código
+					return Promise.reject(new Error('Correo electrónico duplicado'));
+				}
+	
+				// Continuar con el resto del código si el correo electrónico no está duplicado
+				// ...
+			})
+			.then(() => {
+				// Verificar si el nombre de usuario ya está registrado
+				return fetch(`/checkUsername?username=${encodeURIComponent(usernameToCheck)}`);
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.exists) {
+					// Mostrar mensaje de error en el formulario de registro
+					const registrationMessage = document.getElementById('registrationMessage');
+					registrationMessage.textContent = 'Nombre de usuario duplicado';
+					registrationMessage.style.color = 'red';
+					registrationMessage.style.display = 'block';
+	
+					// Ocultar el mensaje de error después de 5 segundos
+					setTimeout(() => {
+						registrationMessage.style.display = 'none';
+					}, 5000);
+	
+					// Detener la ejecución del resto del código
+					return Promise.reject(new Error('Nombre de usuario duplicado'));
+				}
+	
+				// Continuar con el resto del código si el nombre de usuario no está duplicado
+				// ...
+	
+			})
+			.then(() => {
+				// Si las contraseñas coinciden, continuar con la solicitud de registro
+				const formData = {
+					cedula_rif: document.querySelector('#register-form input[name="cedula_rif"]').value,
+					nombre_razon_social: document.querySelector('#register-form input[name="nombre_razon_social"]').value,
+					telefono: document.querySelector('#register-form input[name="telefono"]').value,
+					username: document.querySelector('#register-form input[name="username"]').value,
+					email: document.querySelector('#register-form input[name="email"]').value,
+					itip: document.querySelector('#register-form input[name="itip"]').value || "0",
+					password: password,
+					confirmPassword: confirmPassword,
+				};
+	
+				return fetch('/register', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(formData),
+				});
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Error al registrar al usuario');
+				}
+				return response.json();
+			})
+			.then(data => {
+				// Manejar los datos de respuesta aquí
+				if (data.message === 'Registro completado') {
+					// Mostrar mensaje de éxito en el formulario de registro
+					const registrationMessage = document.getElementById('registrationMessage');
+					registrationMessage.textContent = 'Registro completado';
+					registrationMessage.style.color = 'green';
+					registrationMessage.style.display = 'block';
+	
+					// Limpiar los campos del formulario después del registro
+					document.querySelector('#register-form input[name="cedula_rif"]').value = '';
+					document.querySelector('#register-form input[name="nombre_razon_social"]').value = '';
+					document.querySelector('#register-form input[name="telefono"]').value = '';
+					document.querySelector('#register-form input[name="username"]').value = '';
+					document.querySelector('#register-form input[name="email"]').value = '';
+					document.querySelector('#register-form input[name="password"]').value = '';
+					document.querySelector('#register-form input[name="password_confirmation"]').value = '';
+	
+					// Ocultar el mensaje de éxito después de 5 segundos
+					setTimeout(() => {
+						registrationMessage.style.display = 'none';
+					}, 5000);
+	
+					// Realizar otras acciones según sea necesario
+				} else {
+					throw new Error(data.error); // Manejar el error específico enviado desde el servidor
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				const registrationMessage = document.getElementById('registrationMessage');
+	
+				if (error.message === 'Correo electrónico duplicado' || error.message === 'Nombre de usuario duplicado') {
+					registrationMessage.textContent = error.message;
+				} else {
+					registrationMessage.textContent = 'Ha ocurrido un error durante el registro. Por favor, inténtelo de nuevo.';
+				}
+	
+				registrationMessage.style.color = 'red';
+				registrationMessage.style.display = 'block';
+	
+				setTimeout(() => {
+					registrationMessage.style.display = 'none';
+				}, 5000);
+			});
+	}
+	</script>
+	
+	
+
+<script>
+	function openForm() {
+	  var overlay = document.getElementById('overlay');
+	document.querySelector('#register-form input[name="cedula_rif"]').value = '';
+	document.querySelector('#register-form input[name="nombre_razon_social"]').value = '';
+	document.querySelector('#register-form input[name="telefono"]').value = '';
+	document.querySelector('#register-form input[name="username"]').value = '';
+	document.querySelector('#register-form input[name="email"]').value = '';
+	document.querySelector('#register-form input[name="itip"]').value = '';
+	document.querySelector('#register-form input[name="password"]').value = '';
+	document.querySelector('#register-form input[name="password_confirmation"]').value = ''; 
+
+	document.querySelector('#login-form input[name="email"]').value = '';
+	document.querySelector('#login-form input[name="password"]').value = '';
+
+	overlay.style.display = 'flex';
+	}
+  
+	function closeForm() {
+	  var overlay = document.getElementById('overlay');
+	  overlay.style.display = 'none';
+	}
+  
+	function toggleForm() {
+	  var loginForm = document.getElementById('login-form');
+	  var registerForm = document.getElementById('register-form');
+	  var toggleBtn = document.querySelector('.toggle-btn');
+	  if (loginForm.style.display === 'none') {
+		loginForm.style.display = 'block';
+		registerForm.style.display = 'none';
+		toggleBtn.textContent = '¿Aún no tienes cuenta? Regístrate aquí';
+	  } else {
+		loginForm.style.display = 'none';
+		registerForm.style.display = 'block';
+		toggleBtn.textContent = '¿Ya tienes cuenta? Inicia sesión aquí';
+	  }
+	}
+  </script> 
+
+<script>
+function login(email, password) {
+	// Devuelve una promesa para manejar la lógica asíncrona
+	return new Promise((resolve, reject) => {
+	  // Realiza una solicitud al servidor para autenticar al usuario
+	  fetch('/authenticate', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  email: email,
+		  password: password,
+		}),
+	  })
+	  .then(response => {
+		// Verifica si la respuesta es exitosa (código de estado 2xx)
+		if (response.ok) {
+		  // Parsea la respuesta JSON
+		  return response.json();
+		} else {
+		  // Rechaza la promesa con un mensaje de error
+		  throw new Error('Autenticación fallida');
+		}
+	  })
+	  .then(data => {
+		// Lógica adicional después de una autenticación exitosa
+		console.log('Usuario autenticado:', data);
+  
+		// Almacena información en localStorage después de la autenticación exitosa
+		const userInfo = {
+		  email: email,
+		  password: password,
+		  itip: data.itip,
+		  userId: data.userId,
+		};
+  
+		// Almacena la información en localStorage
+		localStorage.setItem('userInfo', JSON.stringify(userInfo));
+  
+		console.log(`Usuario autenticado probando - email: ${userInfo.email}, itip: ${userInfo.itip}, userId: ${userInfo.userId}, password: ${userInfo.password}`);
+  
+		// Show authenticated UI
+		showAuthenticatedUI(data.itip);
+  
+		resolve(data);
+	  })
+	  .catch(error => {
+		// Rechaza la promesa con el mensaje de error
+		reject(error.message);
+	  });
+	});
+  }
+  
+  function showAuthenticatedUI(itip) {
+	// Code to show features like "bandeja" and "solicitud"
+	document.getElementById('solicitarButton').style.display = 'inline';
+	document.getElementById('bandejaButton').style.display = 'inline';
+	document.getElementById('logoutButton').style.display = 'inline';
+	document.getElementById('manual').style.display = 'inline';
+  
+	if (itip === 1) {
+	  // Redirect to home.html if itip is 1
+	  window.location.href = 'views/index.html';
+	} else {
+	  // Other actions for itip not equal to 1
+	  document.querySelector('.form-container').innerHTML = `
+		<div id="login-form">
+		  <h2>¡Bienvenido!</h2>
+		  <p>Ha iniciado sesión</p>
+		  <div class="close-btn" onclick="closeForm()">X</div>
+		</div>
+	  `;
+  
+	  // You can add more logic here for specific actions
+	  // ...
+  
+	  // Example: Get and display formIds in the bandeja
+	  const formIds = []; // Replace this with the actual formIds
+	  datosBandeja(formIds);
+	}
+  }
+</script>
+
+
+<script>
+	function validateForm() {
+	  var password = document.getElementById("password").value;
+	  var confirmPassword = document.getElementById("confirmPassword").value;
+  
+	  if (password != confirmPassword) {
+		alert("Las contraseñas no coinciden. Inténtalo de nuevo.");
+		return false;
+	  }
+	  return true;
+	}
+  </script>
+<script>
+let formIds; // Declarar formIds en un ámbito más amplio
+function submitForm(event) {
+    event.preventDefault();
+
+    fetch('/authenticate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: document.querySelector('#login-form input[name="email"]').value,
+            password: document.querySelector('#login-form input[name="password"]').value,
+        }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Autenticación fallida');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Manejar los datos de respuesta aquí
+        if (data.success) {
+            authenticatedUserId = data.userId;
+            const itip = data.itip;
+
+            // Almacena información en localStorage después de la autenticación exitosa
+            const userInfo = {
+                email: document.querySelector('#login-form input[name="email"]').value,
+				password: document.querySelector('#login-form input[name="password"]').value,
+                itip: itip,
+                userId: authenticatedUserId
+            };
+
+            // Almacena la información en localStorage
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+            console.log(`Usuario autenticado probando- email: ${userInfo.email}, itip: ${itip}, userId: ${authenticatedUserId}, password: ${userInfo.password}` );
+
+            if (data.itip === 1) {
+                // Redireccionar a casa.html si itip es 1
+                window.location.href = 'views/index.html';
+            } else {
+                // Si itip no es 1, realizar otras acciones
+                document.querySelector('.form-container').innerHTML = `
+				<div id="login-form">
+					<h2>¡Bienvenido!</h2>
+					<p>Ha iniciado sesión</p>
+					<div class="close-btn" onclick="closeForm()">X</div>
+				</div>
+				`;
+                document.getElementById('solicitarButton').style.display = 'inline'; // Muestra el botón adicional
+                document.getElementById('bandejaButton').style.display = 'inline'; // Habilita el botón "Bandeja"
+				document.getElementById('logoutButton').style.display = 'inline'; // Habilita el botón "Cerrar Sesión"
+				document.getElementById('manual').style.display = 'inline'; // Oculta el botón "Manual de Usuario"
+
+                // Agregar el ID del formulario a la bandeja de cotizaciones
+                // Obtener formIds y asignarlos a la variable global
+                formIds = data.formIds;
+
+                // Agregar el ID del formulario a la bandeja de cotizaciones
+                datosBandeja(formIds);
+
+            }
+        } else {
+            throw new Error(data.error); // Manejar el error específico enviado desde el servidor
+        }
+    })
+	.catch(error => {
+    console.error('Error:', error);
+    // Mostrar mensaje de error en el formulario
+    const loginForm = document.getElementById('login-form');
+    const errorMessage = document.createElement('p');
+    errorMessage.style.color = 'red';
+    errorMessage.textContent = 'Ha ocurrido un error durante la autenticación. Por favor, inténtelo de nuevo.';
+    loginForm.appendChild(errorMessage);
+
+	setTimeout(() => {
+        errorMessage.remove();
+    }, 3000);
+});
+}
+function datosBandeja(formIds) {
+    // Limpiar el contenido de cada categoría antes de recibir nuevos datos
+    document.getElementById('aceptadas').innerHTML = '';
+    document.getElementById('rechazadas').innerHTML = '';
+    document.getElementById('recibidas').innerHTML = '';
+
+    fetch('/fetch_requests_cliente', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al obtener las cotizaciones enviadas');
+        }
+        return response.json();
+    })
+    .then(details => {
+        // Log the details received for debugging
+        console.log('Details Received:', details);
+
+
+        details.forEach(cotizacion => {
+
+			const formatFecha = date => new Date(date).toLocaleDateString('es-ES');
+    		const formatTiempoEntrega = tiempoEntrega => tiempoEntrega ? formatFecha(tiempoEntrega) : '';
+
+
+            if (cotizacion.istatus === 1) {
+                // Mostrar detalles de cotizaciones (istatus 1)
+                document.getElementById('aceptadas').innerHTML += `
+                    ID de Cotización: ${cotizacion.id}<br>
+					ID de Usuario: ${cotizacion.id_cliente}<br>
+					Fecha: ${formatFecha(cotizacion.fecha)}<br>
+                    Tipo: ${cotizacion.tipo}<br>
+                    Descripción: ${cotizacion.descripcion}<br>
+                    Condiciones de Pago: ${cotizacion.condiciones_pago}<br>
+                    Garantía: ${cotizacion.garantia}<br>
+					Tiempo de Entrega: ${formatTiempoEntrega(cotizacion.tiempo_entrega)}<br>
+                    Monto Total: ${cotizacion.monto_total}<br>
+                    <hr>
+                `;
+            } else if (cotizacion.istatus === 2) {
+                // Mostrar detalles de cotizaciones (istatus 2)
+                document.getElementById('rechazadas').innerHTML += `
+                    ID de Cotización: ${cotizacion.id}<br>
+					ID de Usuario: ${cotizacion.id_cliente}<br>
+					Fecha: ${formatFecha(cotizacion.fecha)}<br>
+                    Tipo: ${cotizacion.tipo}<br>
+                    Descripción: ${cotizacion.descripcion}<br>
+                    Condiciones de Pago: ${cotizacion.condiciones_pago}<br>
+                    Garantía: ${cotizacion.garantia}<br>
+					Tiempo de Entrega: ${formatTiempoEntrega(cotizacion.tiempo_entrega)}<br>
+                    Monto Total: ${cotizacion.monto_total}<br>
+					<hr>
+                `;
+            } else if (cotizacion.istatus === 3) {
+                // Mostrar detalles de cotizaciones (istatus 3)
+                document.getElementById('recibidas').innerHTML += `
+                    ID de Cotización: ${cotizacion.id}<br>
+					ID de Usuario: ${cotizacion.id_cliente}<br>
+					Fecha: ${formatFecha(cotizacion.fecha)}<br>
+                    Tipo: ${cotizacion.tipo}<br>
+                    Descripción: ${cotizacion.descripcion}<br>
+                    Condiciones de Pago: ${cotizacion.condiciones_pago}<br>
+                    Garantía: ${cotizacion.garantia}<br>
+					Tiempo de Entrega: ${formatTiempoEntrega(cotizacion.tiempo_entrega)}<br>
+                    Monto Total: ${cotizacion.monto_total}<br>
+					<button style="background-color: #28a745; padding: 5px 10px; font-size: 20px;" class="btn btn-success border-0 mr-2" onclick="updateFormStatus('${cotizacion.id}', 1, event)">Aceptar</button>
+    				<button style="background-color: #dc3545; padding: 5px 10px; font-size: 20px;" class="btn btn-danger border-0" onclick="updateFormStatus('${cotizacion.id}', 2, event)">Rechazar</button>
+					<hr>
+                `;
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Manejar el error en la obtención de las cotizaciones enviadas
+    });
+}
+
+
+function updateFormStatus(formId, istatus, event) {
+    event.stopPropagation();
+    
+    fetch('/update_form_status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            formId: formId,
+            istatus: istatus,
+        }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al actualizar el estado del formulario');
+        }
+        // Llama a la función para actualizar la bandeja de formularios
+        updateBandeja();
+        datosBandeja(formIds);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Manejar el error en la actualización del estado del formulario
+    });
+}
+
+
+</script>
+
+<script>
+/*
+
+// Aceptar formulario
+
+
+		function acceptForm(formId, event) {
+		event.stopPropagation();
+		fetch('/update_form_status', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				formId: formId,
+				istatus: 1, // 1 representa el estado "Aceptadas"
+			}),
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Error al actualizar el estado del formulario');
+				}
+				// Llama a la función para actualizar la bandeja de formularios
+				updateBandeja();
+				datosBandeja(formIds);
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				// Manejar el error en la actualización del estado del formulario
+			});
+	}
+
+	function rejectForm(formId, event) {
+		event.stopPropagation();
+		fetch('/update_form_status', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				formId: formId,
+				istatus: 2, // 2 representa el estado "Rechazadas"
+			}),
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Error al actualizar el estado del formulario');
+				}
+				// Llama a la función para actualizar la bandeja de formularios
+				updateBandeja();
+				datosBandeja(formIds);
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				// Manejar el error en la actualización del estado del formulario
+			});
+	}
+*/
+
+	function updateBandeja() {
+    fetch('/fetch_bandeja_data')
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos de la bandeja de formularios');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data from server:', data);
+            data.forEach(form => {
+                const categoria = form.istatus;
+                console.log('Categoria:', categoria);
+                const categoriaElement = document.getElementById(categoria);
+                console.log('Categoria Element:', categoriaElement);
+                categoriaElement.innerHTML += `
+                    ID del Formulario: ${form.formId}<br>
+                    Fecha: ${form.fecha}<br>
+                    Tipo de Requerimiento: ${form.tipo_de_requerimiento}<br>
+                    Descripción: ${form.descripcion}<br>
+                    Nota: ${form.nota}<br><hr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener los datos de la bandeja de formularios:', error);
+        });
+}
+
+
+</script>
+
+
+  <script>
+    function openRequestForm() {
+        var requestForm = document.getElementById('overlay-request');
+        document.getElementsByName('tipo_de_requerimiento')[0].selectedIndex = 0;
+        document.getElementsByName('descripcion')[0].value = '';
+        document.getElementsByName('nota')[0].value = '';
+
+		setFechaActual();
+
+        requestForm.style.display = 'flex';
+    }
+ 
+    function closeRequestForm() {
+        var requestForm = document.getElementById('overlay-request');
+        requestForm.style.display = 'none';
+    }
+
+	function submitRequest(event) {
+    event.preventDefault();
+
+    // Tu código existente para enviar la solicitud y manejar la respuesta del servidor
+    fetch('/submit_request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            fecha: document.querySelector('input[name="fecha"]').value,
+            tipo_de_requerimiento: document.querySelector('select[name="tipo_de_requerimiento"]').value,
+            descripcion: document.querySelector('textarea[name="descripcion"]').value,
+            nota: document.querySelector('textarea[name="nota"]').value,
+        }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorText => {
+                // Imprimir detalles del error en la consola
+                console.error(`Error al enviar la solicitud. Detalles: ${errorText}`);
+                throw new Error(`Error al enviar la solicitud. Detalles: ${errorText}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Manejar los datos de respuesta aquí
+        console.log('Datos recibidos del servidor:', data);
+
+        const clearFormAndMessages = () => {
+            // Limpiar los campos del formulario
+            document.querySelector('select[name="tipo_de_requerimiento"]').selectedIndex = 0;
+            document.querySelector('textarea[name="descripcion"]').value = '';
+            document.querySelector('textarea[name="nota"]').value = '';
+        };
+
+        if (data.success) {
+            // Mostrar mensaje de éxito en el formulario de solicitud
+            const successMessage = document.createElement('p');
+            successMessage.textContent = 'Su formulario se ha enviado correctamente!';
+            successMessage.classList.add('success-message'); // Agrega una clase para el estilo
+
+            // Agregar mensaje de éxito al formulario sin borrar su contenido actual
+            const requestForm = document.getElementById('request-form');
+            requestForm.appendChild(successMessage);
+
+            // Mostrar detalles del formulario (opcional)
+            const formDetailsContainer = document.createElement('div');
+            formDetailsContainer.innerHTML = data.formDetails;
+            requestForm.appendChild(formDetailsContainer);
+
+            // Ocultar el mensaje de éxito después de 5 segundos
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+
+            clearFormAndMessages(); // Limpiar campos y ocultar mensajes
+
+            // Realizar otras acciones según sea necesario
+        } else {
+            // Mostrar mensaje de error en el formulario de solicitud
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = data.message || 'Ha ocurrido un error al enviar la solicitud.';
+            errorMessage.classList.add('error-message'); // Agrega una clase para el estilo
+
+            // Agregar mensaje de error al formulario sin borrar su contenido actual
+            const requestForm = document.getElementById('request-form');
+            requestForm.appendChild(errorMessage);
+
+            // Ocultar el mensaje de error después de 5 segundos
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+
+            clearFormAndMessages(); // Limpiar campos y ocultar mensajes
+        }
+    })
+    .catch(error => {
+        console.error('Error en catch:', error);
+
+        // Mostrar mensaje de error en el formulario de solicitud
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = `Ha ocurrido un error al enviar la solicitud. Detalles: ${error.message}`;
+        errorMessage.classList.add('error-message'); // Agrega una clase para el estilo
+
+        // Agregar mensaje de error al formulario sin borrar su contenido actual
+        const requestForm = document.getElementById('request-form');
+        requestForm.appendChild(errorMessage);
+
+        // Ocultar el mensaje de error después de 5 segundos
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+
+        clearFormAndMessages(); // Limpiar campos y ocultar mensajes
+    });
+}
+
+
+
+
+</script>
+
+<script>
+function toggleCategoria(categoria) {
+    const categoriaContent = document.getElementById(categoria);
+    categoriaContent.style.display = categoriaContent.style.display === 'none' ? 'block' : 'none';
+
+    if (categoriaContent.style.display === 'block') {
+        console.log(`Clic en la categoría: ${categoria}`);
+        datosBandeja(formIds);
+    }
+}
+
+	function openBandeja() {
+		document.getElementById("bandeja").style.width = "300px";
+		// Actualizar la bandeja al abrir la bandeja
+	}
+
+	function closeBandeja() {
+		document.getElementById("bandeja").style.width = "0";
+	}
+
+</script>
+
+<script>
+	document.getElementById('logoutButton').addEventListener('click', function () {
+	  // Al hacer clic en el botón, elimina la información del usuario de localStorage
+	  localStorage.removeItem('userInfo');
+  
+	  // Puedes redirigir a la página de inicio de sesión u realizar otras acciones necesarias
+	  window.location.href = '../index.html'; // Cambia '/login' por la ruta correcta de tu página de inicio de sesión
+	});
+  </script>
+
+<script>
+    function redirigirAManual() {
+        // Cambia la URL del siguiente enlace con la ruta correcta a tu archivo PDF
+        window.open('https://heyzine.com/flip-book/1f27c9537a.html', '_blank');
+    }
+</script>
+
+<script>
+	// Función para establecer la fecha actual en el campo con id 'fecha'
+    function setFechaActual() {
+		const fechaInput = document.querySelector('input[name="fecha"]');
+        
+        if (fechaInput) {
+            const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            fechaInput.value = fechaActual;
+        } else {
+            console.error('Error: No se encontró el elemento con id "fecha".');
+        }
+    }
+</script>
+
+<script>
+    // Función para permitir solo números en los campos de cédula y teléfono
+    document.addEventListener('DOMContentLoaded', function () {
+        function soloNumeros(event) {
+            const charCode = event.which ? event.which : event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                event.preventDefault();
+            }
+        }
+
+        // Obtén los elementos de cédula y teléfono
+        const cedulaRifInput = document.querySelector('#register-form input[name="cedula_rif"]')
+        const telefonoInput = document.querySelector('#register-form input[name="telefono"]');
+
+        // Agrega eventos de teclado para ambos campos
+        cedulaRifInput.addEventListener('keydown', soloNumeros);
+        telefonoInput.addEventListener('keydown', soloNumeros);
+    });
+</script>

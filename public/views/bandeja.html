@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles/bandeja.css">
+    <title>Montayreca.</title>
+
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+
+		try {
+			const userInfoString = localStorage.getItem('userInfo');
+			console.log('User info string:', userInfoString);
+
+			if (userInfoString) {
+			const userInfo = JSON.parse(userInfoString);
+			const { email, password } = userInfo;
+
+			console.log('Attempting login with:', email, password);
+
+			// Realiza el inicio de sesión automático
+			login(email, password)
+				.then(() => {
+				console.log('Usuario autenticado automáticamente:', email, password);
+				// Realiza acciones adicionales según la información del usuario
+				})
+				.catch((error) => {
+				console.error('Error al iniciar sesión automáticamente:', error.message);
+				console.log('Full error details:', error); // Add this line to log the full error details
+				});
+			}
+
+		} catch (error) {
+			console.error('Error en el script:', error);
+		}
+		});
+		</script>
+</head>
+
+<body>
+    <div class="d-flex">
+        <div id="sidebar-container" class="bg-primary">
+            <div class="logo">
+                <h4 class="text-light font-weigth-bold">Montayreca.</h4>
+            </div>
+            <div class="menu">
+                <a href="formulario.html" class="d-block text-light p-4"><ion-icon name="reader"
+                        class=" lead"> </ion-icon>Formulario</a>
+                <a href="bandeja.html" class="d-block text-light p-4"><ion-icon name="archive"
+                        class=" lead "> </ion-icon>Bandeja de entrada</a>
+                <a href="reportes.html" class="d-block text-light p-4"><ion-icon name="albums"
+                        class="lead" ></ion-icon>Reportes</a>
+                <a href="https://heyzine.com/flip-book/1f27c9537a.html" target="_blank" 
+                        class="d-block text-light p-4"><ion-icon name="people" class=" lead" ></ion-icon>Manual de Usuario</a>
+                <a href="#" id="logoutLink" class="d-block text-light p-4 position-absolute bottom-0">
+                    <ion-icon name="person" class="lead"></ion-icon>Cerrar sesión</a>
+            </div>
+        </div>
+        <div class="w-100">
+            <nav class="navbar navbar-expand-lg bg-light">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active fs-4 fw-bold" aria-current="page" href="#">Entrada</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-4 fw-bold" href="#">Enviados</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-4 fw-bold" href="#">Aceptados</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-4 fw-bold" href="#">Rechazados</a>
+                            </li>
+                        </ul>
+                        <!--
+                        <form class="d-flex" role="search">
+                            <input class="form-control me-2" type="search" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-warning fs-6 " type="submit">Search</button>
+                        </form>
+                        -->
+                    </div>
+                </div>
+            </nav>
+            <div class="bandeja-content" id="bandejaContent"></div>
+        </div>
+    </div>
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+    -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function cargarContenido(data, esSolicitud) {
+                const bandejaContent = document.getElementById('bandejaContent');
+                bandejaContent.innerHTML = ''; // Limpiar el contenido existente
+    
+                data.sort((a, b) => b.id - a.id);
+    
+                data.forEach(item => {
+                    const fecha = new Date(item.fecha);
+                    const fechaFormateada = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+    
+                    const tiempoEntrega = item.tiempo_entrega ? new Date(item.tiempo_entrega) : null;
+                    const tiempoEntregaFormateado = tiempoEntrega
+                        ? `${tiempoEntrega.getDate()}/${tiempoEntrega.getMonth() + 1}/${tiempoEntrega.getFullYear()}`
+                        : '';
+    
+                    bandejaContent.innerHTML += `
+                        <div class="categoria">
+                            <div class="categoria-contenido">
+                                <p class="categoria-texto" style="font-weight: bold;">
+                                    ${esSolicitud ? `<strong>ID de Solicitud:</strong> ${item.id}<br>` : `<strong>ID de Cotización:</strong> ${item.id}<br>`}
+                                    ${esSolicitud ? `<strong>ID de Cliente:</strong> ${item.id_usuario}<br>` : `<strong>ID de Cliente:</strong> ${item.id_cliente}<br>`}
+                                    ${esSolicitud ? `<strong>Nombre/Razón Social:</strong> ${item.nombre_razon_social}<br>` : `<strong>Nombre/Razón Social:</strong> ${item.nombre_razon_social}<br>`}
+                                    <strong>Fecha:</strong> ${fechaFormateada}<br>
+                                    ${esSolicitud ? `<strong>Tipo de Requerimiento:</strong> ${item.tipo_de_requerimiento}<br>` : ''}
+                                    <strong>Tipo:</strong> ${item.tipo}<br>
+                                    ${item.descripcion ? `<strong>Descripción:</strong> ${item.descripcion}<br>` : ''}
+                                    ${item.condiciones_pago ? `<strong>Condiciones de Pago:</strong> ${item.condiciones_pago}<br>` : ''}
+                                    ${item.garantia ? `<strong>Garantía:</strong> ${item.garantia}<br>` : ''}
+                                    ${tiempoEntregaFormateado ? `<strong>Tiempo de Entrega:</strong> ${tiempoEntregaFormateado}<br>` : ''}
+                                    ${item.monto_total ? `<strong>Monto Total:</strong> ${item.monto_total}<br>` : ''}
+                                    <br>
+                                    ${item.istatus === 0
+                                        ? `<button class="btn btn-success cotizar-btn" data-id="${item.id}">Cotizar</button>`
+                                        : item.istatus === 4
+                                            ? `<button class="btn btn-danger cotizado-btn" disabled>Cotizado</button>`
+                                            : ''
+                                    }
+                                    ${esSolicitud ? `<button class="btn btn-primary ver-detalle-btn" data-id="${item.id}" data-cliente-id="${item.id_usuario}" data-cliente-nombre="${item.nombre_razon_social}">
+                                        Ver Detalle
+                                    </button>
+                                    <br>` : ''}
+                                    <hr>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                });
+                
+                const cotizarButtons = document.querySelectorAll('.cotizar-btn');
+                cotizarButtons.forEach(button => {
+                    button.addEventListener('click', handleCotizar);
+                });
+                
+
+                    // Agregar evento clic al botón para redirigir al formulario
+                    const verDetalleButtons = document.querySelectorAll('.ver-detalle-btn');
+                    verDetalleButtons.forEach(button => {
+                        button.addEventListener('click', handleVerDetalle);
+                    });
+
+                    function handleVerDetalle(event) {
+                        // Obtener datos de la solicitud desde los atributos del botón
+                        const solicitudId = event.target.dataset.id;
+                        const clienteId = event.target.dataset.clienteId;
+                        const clienteNombre = event.target.dataset.clienteNombre;
+
+                        // Redirigir al formulario con la información de la solicitud
+                        window.location.href = `formulario.html?solicitudId=${solicitudId}&clienteId=${clienteId}&clienteNombre=${clienteNombre}`;
+                    }
+
+                function handleCotizar(event) {
+                    const cotizacionId = event.target.dataset.id;
+
+                    // Obtén el botón que se hizo clic
+                    const clickedButton = event.target;
+
+                    // Envía la solicitud al servidor para cambiar el estado
+                    fetch('/cotizar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            cotizacionId: cotizacionId,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Actualiza el estilo y texto del botón después de la cotización
+                        clickedButton.classList.remove('btn-success');
+                        clickedButton.classList.add('btn-danger');
+                        clickedButton.innerText = 'Cotizado';
+                        clickedButton.disabled = true;
+
+                        // Puedes realizar otras acciones después de la cotización si es necesario
+                    })
+                    .catch(error => {
+                        console.error('Error al cotizar:', error);
+                    });
+                }
+
+            }
+    
+            function cargarSolicitudes(url, esSolicitud) {
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        cargarContenido(data, esSolicitud);
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar contenido:', error);
+                    });
+            }
+    
+            // Cargar solicitudes al cargar la página
+            cargarSolicitudes('/fetch_requests_solicitudes', true);
+    
+            // Agregar eventos de clic a los enlaces de "Entrada", "Enviados", "Aceptados" y "Rechazados"
+            const entradaLink = document.querySelector('.nav-item:nth-child(1) a');
+            entradaLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                cargarSolicitudes('/fetch_requests_solicitudes', true);
+            });
+    
+            const enviadosLink = document.querySelector('.nav-item:nth-child(2) a');
+            enviadosLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                cargarSolicitudes('/fetch_requests_enviados', false);
+            });
+    
+            const aceptadosLink = document.querySelector('.nav-item:nth-child(3) a');
+            aceptadosLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                cargarSolicitudes('/fetch_requests_aceptados', false);
+            });
+    
+            const rechazadosLink = document.querySelector('.nav-item:nth-child(4) a');
+            rechazadosLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                cargarSolicitudes('/fetch_requests_rechazados', false);
+            });
+        });
+    </script>
+        
+<script>
+function login(email, password) {
+    // Devuelve una promesa para manejar la lógica asíncrona
+    return new Promise((resolve, reject) => {
+        // Realiza una solicitud al servidor para autenticar al usuario
+        fetch('/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password,
+            }),
+        })
+        .then(response => {
+            // Verifica si la respuesta es exitosa (código de estado 2xx)
+            if (response.ok) {
+                // Parsea la respuesta JSON
+                return response.json();
+            } else {
+                // Rechaza la promesa con un mensaje de error
+                throw new Error('Autenticación fallida');
+            }
+        })
+        .then(data => {
+            // Lógica adicional después de una autenticación exitosa
+            console.log('Usuario autenticado:', data);
+
+            // Almacena información en localStorage después de la autenticación exitosa
+            const userInfo = {
+                email: email,
+                password: password,
+                itip: data.itip,
+                userId: data.userId,
+            };
+
+            // Almacena la información en localStorage
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+            console.log(`Usuario autenticado probando - email: ${userInfo.email}, itip: ${userInfo.itip}, userId: ${userInfo.userId}, password: ${userInfo.password}`);
+
+            resolve(data);
+        })
+        .catch(error => {
+            // Rechaza la promesa con el mensaje de error
+            reject(error.message);
+        });
+    });
+}
+    </script>
+
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // ... your existing code ...
+    
+      // Attach a click event to the logout link
+      const logoutLink = document.getElementById('logoutLink');
+      if (logoutLink) {
+        logoutLink.addEventListener('click', logout);
+      }
+    });
+    
+    function logout(event) {
+      event.preventDefault();
+    
+      // Clear user information from local storage
+    
+    
+      // Perform any additional steps for logging out on the server-side (invalidate session/token)
+    
+      // Redirect to the login page
+      window.location.href = '../index.html'; // Change the URL to your login page
+        localStorage.removeItem('userInfo');
+    }
+    </script>
+
+<!--
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // ... tu código existente ...
+
+    // Agregar eventos clic al botón para redirigir al formulario
+    const verDetalleButtons = document.querySelectorAll('.ver-detalle-btn');
+    verDetalleButtons.forEach(button => {
+        button.addEventListener('click', handleVerDetalle);
+    });
+
+    // Ejecutar automáticamente la cotización al cargar la página
+    const cotizarButtons = document.querySelectorAll('.cotizar-btn');
+    cotizarButtons.forEach(button => {
+        handleCotizarOnLoad(button);
+    });
+
+    function handleCotizarOnLoad(button) {
+        const cotizacionId = button.dataset.id;
+
+        // Envía la solicitud al servidor para cambiar el estado
+        fetch('/cotizar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cotizacionId: cotizacionId,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Actualiza el estilo y texto del botón después de la cotización
+            button.classList.remove('btn-success');
+            button.classList.add('btn-danger');
+            button.innerText = 'Cotizado';
+            button.disabled = true;
+
+            // Puedes realizar otras acciones después de la cotización si es necesario
+        })
+        .catch(error => {
+            console.error('Error al cotizar:', error);
+        });
+    }
+
+    // ... más código ...
+});
+
+</script>
+-->

@@ -32,3 +32,4 @@ UserSchema.methods.isCorrectPassword = async function (password) {
 };
 
 module.exports = UserSchema;
+

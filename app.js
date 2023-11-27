@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
@@ -11,6 +12,8 @@ const connection = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE
 });
+
+app.use(cors());rs
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -1235,3 +1238,7 @@ app.post('/check_cotizacion', (req, res) => {
 
 
 // ... Resto del código ...
+
+app.listen(3306, () => {
+  console.log('Servidor escuchando en el puerto 3306');
+});
